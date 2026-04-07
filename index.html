@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Minimalista</title>
+
+<style>
+  * {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  body {
+    margin: 0;
+    height: 100vh;
+    background: #eaeaea;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .calculator {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 20px;
+    width: 280px;
+    box-shadow: 10px 10px 25px rgba(0,0,0,0.1),
+                -10px -10px 25px rgba(255,255,255,0.7);
+  }
+
+  .history {
+    font-size: 14px;
+    color: #888;
+    text-align: right;
+    height: 20px;
+  }
+
+  .display {
+    font-size: 32px;
+    text-align: right;
+    margin-bottom: 15px;
+    color: #333;
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  button {
+    border: none;
+    padding: 15px;
+    font-size: 18px;
+    border-radius: 12px;
+    background: #e0e0e0;
+    box-shadow: 5px 5px 10px #c8c8c8,
+                -5px -5px 10px #ffffff;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  button:active {
+    box-shadow: inset 5px 5px 10px #c8c8c8,
+                inset -5px -5px 10px #ffffff;
+  }
+
+  .operator {
+    color: #ff9500;
+  }
+
+  .equal {
+    grid-column: span 2;
+    background: #8bc34a;
+    color: white;
+  }
+
+  .clear {
+    background: #ff6b6b;
+    color: white;
+  }
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+  <div class="history" id="history"></div>
+  <div class="display" id="display">0</div>
+
+  <div class="buttons">
+    <button class="clear" onclick="clearAll()">C</button>
+    <button onclick="deleteLast()">⌫</button>
+    <button class="operator" onclick="setOperator('/')">÷</button>
+    <button class="operator" onclick="setOperator('*')">×</button>
+
+    <button onclick="appendNumber(7)">7</button>
+    <button onclick="appendNumber(8)">8</button>
+    <button onclick="appendNumber(9)">9</button>
+    <button class="operator" onclick="setOperator('-')">−</button>
+
+    <button onclick="appendNumber(4)">4</button>
+    <button onclick="appendNumber(5)">5</button>
+    <button onclick="appendNumber(6)">6</button>
+    <button class="operator" onclick="setOperator('+')">+</button>
+
+    <button onclick="appendNumber(1)">1</button>
+    <button onclick="appendNumber(2)">2</button>
+    <button onclick="appendNumber(3)">3</button>
+    <button onclick="appendNumber(0)">0</button>
+
+    <button onclick="appendDecimal()">.</button>
+    <button class="equal" onclick="calculate()">=</button>
+  </div>
+</div>
+
+<script>
+let current = "";
+let previous = "";
+let operator = null;
+
+const display = document.getElementById("display");
+const history = document.getElementById("history");
+
+function updateDisplay() {
+  display.textContent = current || "0";
+}
+
+function appendNumber(num) {
+  current += num;
+  updateDisplay();
+}
+
+function appendDecimal() {
+  if (!current.includes(".")) {
+    current += ".";
+    updateDisplay();
+  }
+}
+
+function setOperator(op) {
+  if (current === "") return;
+  if (previous !== "") calculate();
+  operator = op;
+  previous = current;
+  current = "";
+  history.textContent = previous + " " + op;
+}
+
+function calculate() {
+  let prev = parseFloat(previous);
+  let curr = parseFloat(current);
+  let result;
+
+  if (isNaN(prev) || isNaN(curr)) return;
+
+  switch (operator) {
+    case '+': result = prev + curr; break;
+    case '-': result = prev - curr; break;
+    case '*': result = prev * curr; break;
+    case '/': result = curr === 0 ? "Error" : prev / curr; break;
+    default: return;
+  }
+
+  history.textContent = previous + " " + operator + " " + current;
+  current = result.toString();
+  operator = null;
+  previous = "";
+  updateDisplay();
+}
+
+function clearAll() {
+  current = "";
+  previous = "";
+  operator = null;
+  history.textContent = "";
+  updateDisplay();
+}
+
+function deleteLast() {
+  current = current.slice(0, -1);
+  updateDisplay();
+}
+</script>
+
+</body>
+</html>
